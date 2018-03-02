@@ -10,8 +10,14 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.lang.reflect.Array;
@@ -24,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     public Button searchButton;
     public TextView temperatureText;
     public TextView cityText;
+    public ProgressBar bar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +41,13 @@ public class MainActivity extends AppCompatActivity {
         cityRequest = findViewById(R.id.editText);
         temperatureText = findViewById(R.id.temperature);
         cityText = findViewById(R.id.cityName);
+        bar = findViewById(R.id.progressBar);
 
     }
 
     public void searchCity(View view) {
-
+        WeatherResponse r = new WeatherResponse();
+        r.execute();
     }
 
     public void goToTest(View view) {
@@ -51,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onProgressUpdate(Void... values) {
-            ProgressBar bar = findViewById(R.id.progressBar);
             bar.setVisibility(View.VISIBLE);
         }
 
@@ -59,8 +67,26 @@ public class MainActivity extends AppCompatActivity {
         protected ArrayList<String> doInBackground(String... params){
 
             RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
-            String url = "http://api.apixu.com/v1/current.xml"; // weather api
 
+            String urlAPI = "http://api.apixu.com/v1/current.json?"; // weather api
+            String APIkey = "key=f10687e83ef8444d945180734182301";
+            String city = cityRequest.getText().toString();
+            String url = urlAPI + APIkey + "&q=" + city;
+
+            JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    System.out.print("Responce:" + response.toString());
+                    bar.setVisibility(View.INVISIBLE);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+
+                }
+            });
+
+            queue.add(jsonObjReq);
 
             ArrayList<String> result = new ArrayList<String>();
 
