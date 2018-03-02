@@ -21,11 +21,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.InputStream;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     public TextView temperatureText;
     public TextView cityText;
     public ProgressBar bar;
+    public String url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +44,20 @@ public class MainActivity extends AppCompatActivity {
         cityText = findViewById(R.id.cityName);
         bar = findViewById(R.id.progressBar);
 
+        String urlAPI = "http://api.apixu.com/v1/current.json?"; // weather api
+        String APIkey = "key=f10687e83ef8444d945180734182301"; // weather api key
+        url = urlAPI + APIkey + "&q="; //concatenation
+
     }
 
     public void searchCity(View view) {
+
+        //  DELETE AFTER FIX WITH ASYNCTASK !!!
+        cityRequest.setText("Moscow");
+
+
         WeatherResponse r = new WeatherResponse();
-        r.execute();
+        r.execute(url);
     }
 
     public void goToTest(View view) {
@@ -63,7 +69,9 @@ public class MainActivity extends AppCompatActivity {
     private class WeatherResponse extends AsyncTask<String, Void, Map<String, String>>{
 
         @Override
-        protected void onProgressUpdate(Void... values) {
+        protected void onPreExecute() {
+            super.onProgressUpdate();
+
             bar.setVisibility(View.VISIBLE);
         }
 
@@ -74,12 +82,12 @@ public class MainActivity extends AppCompatActivity {
 
             RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
 
-            String urlAPI = "http://api.apixu.com/v1/current.json?"; // weather api
-            String APIkey = "key=f10687e83ef8444d945180734182301";
             String city = cityRequest.getText().toString();
-            String url = urlAPI + APIkey + "&q=" + city;
+            String RequestUrl = url + city; // to keep "url" clear
 
-            JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET, url,
+            Log.w("res", "URL = " + url);
+
+            JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET, RequestUrl,
                     null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -89,10 +97,12 @@ public class MainActivity extends AppCompatActivity {
                                 .getString("region");
                         Log.w("res", city);
                         result.put("city", city);
+                        Log.w("result", result.get("city"));
                         String temperature = response.getJSONObject("current")
                                 .getString("temp_c");
                         Log.w("res", temperature);
                         result.put("temp",temperature);
+                        Log.w("result", result.get("temp"));
                     } catch (JSONException e){
                         Log.w("EXCEPTION", e);
                     }
@@ -106,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
             queue.add(jsonObjReq);
 
+            Log.w("result", result.toString());
             return result;
 
         }
