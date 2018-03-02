@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,12 +18,15 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private class WeatherResponse extends AsyncTask<String, Void, ArrayList<String>>{
+    private class WeatherResponse extends AsyncTask<String, Void, Map<String, String>>{
 
         @Override
         protected void onProgressUpdate(Void... values) {
@@ -64,7 +68,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected ArrayList<String> doInBackground(String... params){
+        protected Map<String, String> doInBackground(String... params){
+
+            final Map<String, String> result = new HashMap<String, String>();
 
             RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
 
@@ -73,11 +79,23 @@ public class MainActivity extends AppCompatActivity {
             String city = cityRequest.getText().toString();
             String url = urlAPI + APIkey + "&q=" + city;
 
-            JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET, url,
+                    null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    System.out.print("Responce:" + response.toString());
-                    bar.setVisibility(View.INVISIBLE);
+                    Log.w("res", "Responce:" + response.toString());
+                    try{
+                        String city = response.getJSONObject("location")
+                                .getString("region");
+                        Log.w("res", city);
+                        result.put("city", city);
+                        String temperature = response.getJSONObject("current")
+                                .getString("temp_c");
+                        Log.w("res", temperature);
+                        result.put("temp",temperature);
+                    } catch (JSONException e){
+                        Log.w("EXCEPTION", e);
+                    }
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -88,16 +106,23 @@ public class MainActivity extends AppCompatActivity {
 
             queue.add(jsonObjReq);
 
-            ArrayList<String> result = new ArrayList<String>();
-
             return result;
+
         }
 
-        @Override
-        protected void onPostExecute(ArrayList<String> list){
 
-            cityText.setText(list.get(1)); // 1 element = city name
-            temperatureText.setText(list.get(2)); // 2 element = current temperature
+        @Override
+        protected void onPostExecute(Map<String, String> result){
+            super.onPostExecute(result);
+
+            bar.setVisibility(View.INVISIBLE);
+
+            /**
+            cityText.setText(result.get("city")); // 1 element = city name
+            temperatureText.setText(result.get("temp")); // 2 element = current temperature
+            */
+            Log.w("in onPostExecute", "!!!!" + result.get("city"));
+
         }
     }
 
