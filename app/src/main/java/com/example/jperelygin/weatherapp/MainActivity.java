@@ -21,6 +21,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,13 +67,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private class WeatherResponse extends AsyncTask<String, Void, Map<String, String>>{
+    private class WeatherResponse extends AsyncTask<String, Map<String, String>, Map<String, String>>{
 
         @Override
         protected void onPreExecute() {
             super.onProgressUpdate();
-
             bar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected void onPostExecute(Map<String, String> result){
+            super.onPostExecute(result);
+            bar.setVisibility(View.INVISIBLE);
+        }
+
+        @Override
+        protected void onProgressUpdate(Map <String, String>... result){
+            super.onProgressUpdate(result);
+
+                /**
+                cityText.setText(result.get("city")); // 1 element = city name
+                temperatureText.setText(result.get("temp")); // 2 element = current temperature
+                 */
+                for (Map<String,String> s:result){
+                    Log.w("for loop", "s = " + s.toString());
+                }
+
         }
 
         @Override
@@ -97,12 +117,13 @@ public class MainActivity extends AppCompatActivity {
                                 .getString("region");
                         Log.w("res", city);
                         result.put("city", city);
-                        Log.w("result", result.get("city"));
+                        Log.w("result", "city " + result.get("city"));
                         String temperature = response.getJSONObject("current")
                                 .getString("temp_c");
                         Log.w("res", temperature);
                         result.put("temp",temperature);
-                        Log.w("result", result.get("temp"));
+                        Log.w("result", "temp " + result.get("temp"));
+                        publishProgress(result);
                     } catch (JSONException e){
                         Log.w("EXCEPTION", e);
                     }
@@ -110,31 +131,13 @@ public class MainActivity extends AppCompatActivity {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError volleyError) {
-
+                    // nothing here
                 }
             });
-
             queue.add(jsonObjReq);
-
-            Log.w("result", result.toString());
-            return result;
-
+            return null;
         }
 
-
-        @Override
-        protected void onPostExecute(Map<String, String> result){
-            super.onPostExecute(result);
-
-            bar.setVisibility(View.INVISIBLE);
-
-            /**
-            cityText.setText(result.get("city")); // 1 element = city name
-            temperatureText.setText(result.get("temp")); // 2 element = current temperature
-            */
-            Log.w("in onPostExecute", "!!!!" + result.get("city"));
-
-        }
     }
 
 }
