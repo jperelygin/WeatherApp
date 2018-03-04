@@ -52,18 +52,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void searchCity(View view) {
-
-        //  DELETE AFTER FIX WITH ASYNCTASK !!!
-        cityRequest.setText("Moscow");
-
-
         WeatherResponse r = new WeatherResponse();
         r.execute(url);
     }
 
     public void goToTest(View view) {
-        Intent goTotest = new Intent(MainActivity.this, CatTestAsyncActivity.class);
-        startActivity(goTotest);
+
+        //  TEST with Moscow. Set Invisible after tests
+        cityRequest.setText("Moscow");
+
+
+        WeatherResponse r = new WeatherResponse();
+        r.execute(url);
     }
 
 
@@ -84,14 +84,19 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(Map <String, String>... result){
             super.onProgressUpdate(result);
-
-                /**
-                cityText.setText(result.get("city")); // 1 element = city name
-                temperatureText.setText(result.get("temp")); // 2 element = current temperature
-                 */
-                for (Map<String,String> s:result){
-                    Log.w("for loop", "s = " + s.toString());
+            for (Map<String, String> List : result) {
+                for (Map.Entry me : List.entrySet()){
+                    Log.w("key", me.getKey() + " <- key");
+                    Log.w("value", me.getValue() + " <- value");
+                    if (me.getKey() == "city"){         // I dont like this way, but it works.
+                        cityText.setText(me.getValue().toString());
+                    } else if (me.getKey() == "temp"){
+                        temperatureText.setText(me.getValue().toString());
+                    } else {
+                        temperatureText.setText("ERR");
+                    }
                 }
+            }
 
         }
 
@@ -103,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
             RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
 
             String city = cityRequest.getText().toString();
-            String RequestUrl = url + city; // to keep "url" clear
+            String RequestUrl = url + city;     // to keep "url" clear
 
             Log.w("res", "URL = " + url);
 

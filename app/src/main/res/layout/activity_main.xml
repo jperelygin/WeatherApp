@@ -22,7 +22,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:hint="@string/enter_a_name_of_a_city"
-        app:layout_constraintEnd_toStartOf="@id/button"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,7 +38,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText"
+        app:layout_constraintTop_toBottomOf="parent"
         tools:text="temp" />
 
     <TextView
@@ -65,13 +66,15 @@
         app:layout_constraintTop_toBottomOf="parent"
         app:layout_constraintVertical_bias="0.5" />
 
-    <!-- <Button
+    <Button
+        android:visibility="visible"
+        android:text="@string/test"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:onClick="goToTest"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" /> -->
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
