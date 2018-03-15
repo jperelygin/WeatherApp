@@ -44,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
         bar = findViewById(R.id.progressBar);
 
         String urlAPI = "http://api.apixu.com/v1/current.json?"; // weather api
-        String APIkey = "key=f10687e83ef8444d945180734182301"; // weather api key
+        String key = BuildConfig.ApiKey;
+        String APIkey = "key=" + key; // weather api key
         url = urlAPI + APIkey + "&q="; //concatenation
 
     }
@@ -60,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
         cityRequest.setText("Moscow");
 
 
-        WeatherResponse r = new WeatherResponse();
-        r.execute(url);
+        WeatherResponse resp = new WeatherResponse();
+        resp.execute(url);
     }
 
 
