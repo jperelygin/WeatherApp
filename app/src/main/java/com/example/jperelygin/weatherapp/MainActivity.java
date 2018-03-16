@@ -37,11 +37,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        searchButton = (Button) findViewById(R.id.button);
-        cityRequest = (EditText) findViewById(R.id.editText);
-        temperatureText = (TextView) findViewById(R.id.temperature);
-        cityText = (TextView) findViewById(R.id.cityName);
-        bar = (ProgressBar) findViewById(R.id.progressBar);
+        searchButton = findViewById(R.id.button);
+        cityRequest = findViewById(R.id.editText);
+        temperatureText = findViewById(R.id.temperature);
+        cityText = findViewById(R.id.cityName);
+        bar = findViewById(R.id.progressBar);
 
         String urlAPI = "http://api.apixu.com/v1/current.json?"; // weather api
         String key = BuildConfig.ApiKey;
@@ -63,11 +63,6 @@ public class MainActivity extends AppCompatActivity {
 
         WeatherResponse resp = new WeatherResponse();
         resp.execute(url);
-    }
-
-    public void gsonAndOkhttp(View view) {
-
-
     }
 
 
@@ -92,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                 for (Map.Entry me : List.entrySet()){
                     Log.w("key", me.getKey() + " <- key");
                     Log.w("value", me.getValue() + " <- value");
-                    if (me.getKey() == "city"){         // I don't like this way, but it works.
+                    if (me.getKey() == "city"){         // I dont like this way, but it works.
                         cityText.setText(me.getValue().toString());
                     } else if (me.getKey() == "temp"){
                         temperatureText.setText(me.getValue().toString());
@@ -112,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
 
             String city = cityRequest.getText().toString();
-            String RequestUrl = url + city;     // to keep "url" variable clear
+            String RequestUrl = url + city;     // to keep "url" clear
 
             Log.w("res", "URL = " + url);
 
@@ -148,7 +143,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
-
 
 }
